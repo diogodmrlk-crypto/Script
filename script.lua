@@ -16,19 +16,20 @@ Img.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseB
 Img.InputEnded:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then drag=false end end)
 U.InputChanged:Connect(function(i) if drag and i.UserInputType==Enum.UserInputType.MouseMovement then local np=i.Position-offset Img.Position=UDim2.new(0,np.X,0,np.Y) end end)
 Img.MouseButton1Click:Connect(function() Minimized=false F.Visible=true Img.Visible=false end)
+-- ESP
 local ESP=false local objs={} local function makeESP(plr) if plr==LP then return end local b=Drawing.new("Square") b.Color=Color3.fromRGB(255,255,255) b.Thickness=2 b.Filled=false b.Visible=false local t=Drawing.new("Text") t.Color=Color3.fromRGB(255,255,255) t.Size=16 t.Center=true t.Outline=true t.Visible=false objs[plr]={Box=b,Name=t} plr.CharacterAdded:Connect(function() objs[plr].Box.Visible=false objs[plr].Name.Visible=false end) end
 for _,p in pairs(P:GetPlayers()) do makeESP(p) end P.PlayerAdded:Connect(makeESP)
-S.RenderStepped:Connect(function() if not ESP then for _,o in pairs(objs)do o.Box.Visible=false o.Name.Visible=false end return end for plr,obj in pairs(objs) do if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") then local hrp=plr.Character.HumanoidRootPart local h2=plr.Character:FindFirstChild("Humanoid") local head=plr.Character.Head local pos,onS=C:WorldToViewportPoint(hrp.Position) local hpos,hOn=C:WorldToViewportPoint(head.Position+Vector3.new(0,0.5,0)) if onS and hOn then local height=h2.HipHeight*8 local width=height/2 obj.Box.Size=Vector2.new(width,height) obj.Box.Position=Vector2.new(pos.X-width/2,pos.Y-height/2) obj.Box.Visible=true local dist=math.floor((LP.Character.HumanoidRootPart.Position-hrp.Position).Magnitude) obj.Name.Text=plr.Name.." ["..dist.."m]" obj.Name.Position=Vector2.new(hpos.X,hpos.Y-20) obj.Name.Visible=true else obj.Box.Visible=false obj.Name.Visible=false end else obj.Box.Visible=false obj.Name.Visible=false end end end)
+S.RenderStepped:Connect(function() if not ESP then for _,o in pairs(objs)do o.Box.Visible=false o.Name.Visible=false end return end for plr,obj in pairs(objs) do if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") then local hrp=plr.Character.HumanoidRootPart local h2=plr.Character:FindFirstChild("Humanoid") local head=plr.Character.Head local pos,onS=C:WorldToViewportPoint(hrp.Position) local hpos,hOn=C:WorldToViewportPoint(head.Position+Vector3.new(0,0.5,0)) if onS and hOn then local height=h2.HipHeight*8 local width=height/2 obj.Box.Size=Vector2.new(width,height) obj.Box.Position=Vector2.new(pos.X-width/2,pos.Y-height/2) obj.Box.Visible=true local dist=math.floor((LP.Character.HumanoidRootPart.Position-hrp.Position).Magnitude) obj.Name.Text=plr.Name.." ["..dist.."m]" obj.Name.Position=Vector2.new(hpos.X,hpos.Y-20) obj.Name.Visible=true else obj.Box.Visible=false obj.Name.Visible=false end else obj.Box.Visible=false obj.Name.Visible=false end end)
 Btn("ESP Caixa+Nome",Color3.fromRGB(0,255,0),function(b) ESP=not ESP b.Text=ESP and"ESP Ativado!"or"ESP Caixa+Nome" end)
--- GRUDAR BOLA BROOKHAVEN
+-- Grudar bola de futebol Brookhaven
 local BallFollow=false Btn("Grudar Bola",Color3.fromRGB(255,0,255),function(b) BallFollow=not BallFollow b.Text=BallFollow and"Bola Seguindo!"or"Grudar Bola" end)
 S.RenderStepped:Connect(function()
     if BallFollow then
+        local hrp = char:WaitForChild("HumanoidRootPart")
         for _,v in pairs(workspace:GetChildren()) do
             if v:IsA("Part") and v.Name:lower():find("ball") then
-                local target=v.Position
-                local myPos=char:WaitForChild("HumanoidRootPart").Position
-                v.Position=v.Position:Lerp(myPos,0.1)
+                v.Position=v.Position:Lerp(hrp.Position + Vector3.new(0,2,0),0.1)
+                v.CanCollide=false
             end
         end
     end
